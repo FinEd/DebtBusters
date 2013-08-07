@@ -163,7 +163,7 @@ GameObject:
   - 4: {fileID: 715206690}
   - 108: {fileID: 715206689}
   m_Layer: 0
-  m_Name: Sun
+  m_Name: Sun (Main light)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -228,7 +228,7 @@ GameObject:
   - 23: {fileID: 1259254696}
   - 114: {fileID: 1259254700}
   m_Layer: 0
-  m_Name: Capsule
+  m_Name: GameCapsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -294,7 +294,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3011158277fca44fa160c92d5c80cf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grid: {fileID: 400000, guid: d8cd9a62075cca44e828292f66c2c708, type: 2}
+  grid: {fileID: 100000, guid: d8cd9a62075cca44e828292f66c2c708, type: 2}
 --- !u!1 &2055114688
 GameObject:
   m_ObjectHideFlags: 0

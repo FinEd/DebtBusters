@@ -1,14 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 
-	// Our Prefab grid piece
-	public Transform grid;
+	// Our Prefab grid piece and a container
+	// to hold them all for later reference
+	public GameObject grid;
+	static List<GameObject> clones = new List<GameObject>();
 	
 	// Use this for initialization
 	void Start () {
-
+		
 		// Instatiate grid sizing
 		int rows = 3;
 		int cols = 3;
@@ -44,14 +47,18 @@ public class GameManager : MonoBehaviour {
 				else if(j > mid) {
 					x = (mid-j)*50;
 				}
-
+				
 				// Set rotation to 270 around the x-axis
 				// since we're using planes
 				Quaternion rotation = Quaternion.identity;
 				rotation.eulerAngles = new Vector3(270,0,0);
 				
 				// Instantiate an instance of our GridPrefab
-				Instantiate(grid,new Vector3(x,y,z),rotation);
+				GameObject clone = Instantiate(grid,new Vector3(x,y,z),rotation) as GameObject;
+				if(clone != null) {
+					clone.GetComponent<GridManager>().Initialize(i,j,new Vector3(x,y,z));
+					clones.Add(clone);
+				}
 			}
 		}
 	}
