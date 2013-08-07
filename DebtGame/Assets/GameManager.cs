@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 	
+	// Add a comment to check GitHub works
+	int test = 1;
+	
 	public static GameManager _instance = null;
 	
 	public static GameManager getInstance() {
