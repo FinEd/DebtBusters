@@ -84,78 +84,20 @@ public class GridManager : MonoBehaviour {
 		}
 	}
 	
-/*
-		// Set chip type and chip count for this square
-	// Called by master class
-	public void ShowChip(int ChipType, int ChipCount, Vector3 location) {
-		this.ChipType = ChipType;
-		this.ChipCount = ChipCount;
-		
-		// Create the needed chip prefab
-		if(this.ChipType == TILE_BLUE) {
-			Debug.Log("I am a blue square with " + ChipCount + " chips");
-			
-			if(ChipCount >= 0) {
-				// Set rotation to 270 around the x-axis
-				// since we're using planes
-				Quaternion rotation = Quaternion.identity;
-				rotation.eulerAngles = new Vector3(90,0,0);
-					
-				// Instantiate an instance of our GridPrefab
-				GameObject bChip = Instantiate(chip,location,rotation) as GameObject;
-				bChip.renderer.material.SetTexture("_MainTex",blueChip);
-			}
-//			renderer.material.SetTexture("_MainTex",blueChip);
-		}
-		else if(this.ChipType == TILE_RED) {
-			Debug.Log("I am a red square with " + ChipCount + " chips");
-			
-			if(ChipCount >= 0) {
-				// Set rotation to 270 around the x-axis
-				// since we're using planes
-				Quaternion rotation = Quaternion.identity;
-				rotation.eulerAngles = new Vector3(90,0,0);
-					
-				// Instantiate an instance of our GridPrefab
-				GameObject rChip = Instantiate(chip,location,rotation) as GameObject;
-				rChip.renderer.material.SetTexture("_MainTex",redChip);
-			}
-//			renderer.material.SetTexture("_MainTex",redChip);
-		}
-		else if(this.ChipType == TILE_WHITE) {
-			Debug.Log("I am a white square with " + ChipCount + " chips");
-			
-			if(ChipCount >= 0) {
-				// Set rotation to 270 around the x-axis
-				// since we're using planes
-				Quaternion rotation = Quaternion.identity;
-				rotation.eulerAngles = new Vector3(90,0,0);
-					
-				// Instantiate an instance of our GridPrefab
-				GameObject wChip = Instantiate(chip,location,rotation) as GameObject;
-				wChip.renderer.material.SetTexture("_MainTex",whiteChip);
-			}			
-//			renderer.material.SetTexture("_MainTex",whiteChip);
-		}
-		else {
-			Debug.Log("I am an enigma!");
-
-			if(ChipCount >= 0) {
-				// Set rotation to 270 around the x-axis
-				// since we're using planes
-				Quaternion rotation = Quaternion.identity;
-				rotation.eulerAngles = new Vector3(90,0,0);
-					
-				// Instantiate an instance of our GridPrefab
-				GameObject wChip = Instantiate(chip,location,rotation) as GameObject;
-				wChip.renderer.material.SetTexture("_MainTex",whiteChip);
-			}
-		}
+	void OnMouseEnter() {
+		Debug.Log("Mouse Enter " + this.name + " position: " + ChipPosition.i + ", " + ChipPosition.j);
 	}
-*/
+	
+	void OnMouseExit() {
+		Debug.Log("Mouse Exit " + this.name + " position: " + ChipPosition.i + ", " + ChipPosition.j);
+	}
 	
 	void OnMouseDown() {
-		Debug.Log("Clicked on " + this.name);
+		Debug.Log("Mouse Down " + this.name + " position: " + ChipPosition.i + ", " + ChipPosition.j);
+	}
+	
+	void OnMouseUp() {
+		Debug.Log("Mouse Up " + this.name + " position: " + ChipPosition.i + ", " + ChipPosition.j);
 	}
 	
 	// Update is called once per frame

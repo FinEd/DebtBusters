@@ -4,9 +4,54 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 	
-	// Add a comment to check GitHub works
-	int test = 1;
+		public static void swipe(GridManager tileFrom, GridManager tileTo) {
+		if(tileFrom.getType() == GridManager.TILE_RED ||
+			tileFrom.getType() == GridManager.TILE_BLUE ||
+			tileFrom.getType() == GridManager.TILE_NONE) {
+			Debug.Log("Invalid swipe, tile type is " + tileFrom.getTypeName());
+			// do nothing
+		} else {
+			// tileFrom is white.
+			if(tileTo.getType() == GridManager.TILE_WHITE ||
+				tileTo.getType() == GridManager.TILE_NONE) {
+				// tileFrom count remains as is, tileTo count increases by tileFrom count
+				tileTo.setCount(tileTo.getCount() + tileFrom.getCount());
+			} else if(tileTo.getType() == GridManager.TILE_BLUE) {
+				// tileFrom reset to count 0 and type none, tileTo count increases by tileFrom count
+				tileTo.setCount(tileTo.getCount() + tileFrom.getCount());
+				tileFrom.setCount(0);
+			} else {
+				// tileTo is red
+				if(tileFrom.getCount() > tileTo.getCount()) {
+					tileFrom.setCount(tileFrom.getCount() - tileTo.getCount());
+					tileTo.setCount(0);
+				} else if(tileFrom.getCount() == tileTo.getCount()) {
+					tileFrom.setCount(0);
+					tileTo.setCount(0);
+				} else {
+					tileTo.setCount(tileTo.getCount() - tileFrom.getCount());
+					tileFrom.setCount(0);
+				}
+			}
+		}
+	}
 	
+	// works for 9-grid, needs modification for 25-grid or more
+	public static bool isNeighbor(GridManager tileFrom, GridManager tileTo) {
+		GridManager.Position posFrom = tileFrom.getPosition();
+		GridManager.Position posTo = tileTo.getPosition();
+		// center is neighbor to all in a 9-grid case
+		if(posFrom.i == 1 && posFrom.j == 1) return true;
+		if(posTo.i == 1 && posTo.j == 1) return true;
+		// 4-connected
+		if(posFrom.i == posTo.i &&
+			(System.Math.Abs(posFrom.j - posTo.j) == 1)) return true;
+		if(posFrom.j == posTo.j &&
+			(System.Math.Abs(posFrom.i - posTo.i) == 1)) return true;
+		
+		return false;
+	}
+
 	public static GameManager _instance = null;
 	
 	public static GameManager getInstance() {
@@ -144,9 +189,10 @@ public class GameManager : MonoBehaviour {
 			}
 		}
 		
-		while(whitesToAdd > 0) {
-			for(int i=0; i < TILE_WIDTH; i++)
-				for(int j=0; j < TILE_HEIGHT; j++) {
+		while(whitesToAdd > 0)
+		for(int i=0; i < TILE_WIDTH; i++)
+			for(int j=0; j < TILE_HEIGHT; j++) {
+				if(whitesToAdd == 0) break;
 				if(i==1 & j==1) continue;
 				GridManager tile = clones[i, j];
 				if(tile.getType() == GridManager.TILE_WHITE) {
@@ -163,12 +209,12 @@ public class GameManager : MonoBehaviour {
 						}
 					}
 				}
-			}
 		}
 		
-		while(redsToAdd > 0) {
-			for(int i=0; i < TILE_WIDTH; i++)
-				for(int j=0; j < TILE_HEIGHT; j++) {
+		while(redsToAdd > 0)
+		for(int i=0; i < TILE_WIDTH; i++)
+			for(int j=0; j < TILE_HEIGHT; j++) {
+				if(redsToAdd == 0) break;
 				if(i==1 & j==1) continue;
 				GridManager tile = clones[i, j];
 				if(tile.getType() == GridManager.TILE_RED) {
@@ -185,7 +231,6 @@ public class GameManager : MonoBehaviour {
 						}
 					}
 				}
-			}
 		}
 		
 		for(int i=0; i < TILE_WIDTH; i++)
