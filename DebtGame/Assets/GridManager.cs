@@ -14,6 +14,7 @@ public class GridManager : MonoBehaviour {
 	public Texture blueChip;
 	public Texture redChip;
 	public Texture whiteChip;
+	public Texture selectedGrid;
 
 	// What type of "chip" is this?
 	//  0 = unitialized
@@ -94,6 +95,7 @@ public class GridManager : MonoBehaviour {
 	
 	void OnMouseDown() {
 		Debug.Log("Mouse Down " + this.name + " position: " + ChipPosition.i + ", " + ChipPosition.j);
+		renderer.material.SetTexture("_MainTex",selectedGrid);	
 	}
 	
 	void OnMouseUp() {
@@ -167,5 +169,4 @@ public class GridManager : MonoBehaviour {
 			this.j = j;
 		}
 	}
-
 }
