@@ -41,7 +41,7 @@ public class Button : MonoBehaviour {
  
 	static GameManager manager = null;
 	
-	static GameManager getManager(GameObject gameObject) {
+	public static GameManager getManager(GameObject gameObject) {
 		if(manager == null) {
 			Debug.Log("Creating game manager");
 			manager = (GameManager) gameObject.AddComponent("GameManager");

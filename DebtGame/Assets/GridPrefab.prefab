@@ -84,6 +84,7 @@ MonoBehaviour:
   redChip: {fileID: 2800000, guid: 77f569f25ab01b949afb684a098212f1, type: 3}
   whiteChip: {fileID: 2800000, guid: 5428d67b26bb6d940bd535f5e2e3c0d0, type: 3}
   selectedGrid: {fileID: 2800000, guid: e699ac1564f3426489fce484f6372f3c, type: 3}
+  unselectedGrid: {fileID: 2800000, guid: e679305f229bbd445be05bc367d280f5, type: 3}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

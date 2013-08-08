@@ -2,18 +2,21 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class GameManager : MonoBehaviour {
-	
+public class GameManager : MonoBehaviour {	
 		public static void swipe(GridManager tileFrom, GridManager tileTo) {
 		if(tileFrom.getType() == GridManager.TILE_RED ||
 			tileFrom.getType() == GridManager.TILE_BLUE ||
-			tileFrom.getType() == GridManager.TILE_NONE) {
-			Debug.Log("Invalid swipe, tile type is " + tileFrom.getTypeName());
+			tileFrom.getType() == GridManager.TILE_NONE ||
+			tileTo.getType() == GridManager.TILE_NONE) {
+			Debug.Log("Invalid swipe, tileFrom type is " + tileFrom.getTypeName() + ", tileTo type is " + tileTo.getTypeName());
 			// do nothing
 		} else {
+			int origFromCount = tileFrom.getCount();
+			string fromName = tileFrom.getTypeName();
+			int origToCount = tileTo.getCount();
+			string toName = tileTo.getTypeName();
 			// tileFrom is white.
-			if(tileTo.getType() == GridManager.TILE_WHITE ||
-				tileTo.getType() == GridManager.TILE_NONE) {
+			if(tileTo.getType() == GridManager.TILE_WHITE) { // ||tileTo.getType() == GridManager.TILE_NONE) {
 				// tileFrom count remains as is, tileTo count increases by tileFrom count
 				tileTo.setCount(tileTo.getCount() + tileFrom.getCount());
 			} else if(tileTo.getType() == GridManager.TILE_BLUE) {
@@ -33,6 +36,8 @@ public class GameManager : MonoBehaviour {
 					tileFrom.setCount(0);
 				}
 			}
+			Debug.Log("From Tile " + fromName + ": orig count=" + origFromCount + ", new count=" + tileFrom.getCount());
+			Debug.Log("To Tile " + toName + ": orig count=" + origToCount + ", new count=" + tileTo.getCount());
 		}
 	}
 	
@@ -60,6 +65,29 @@ public class GameManager : MonoBehaviour {
 		return _instance;
 	}
 	
+	public static bool roundInProgress = false;
+	static GridManager tileFrom = null;
+	static GridManager tileTo = null;
+	public static void tileClicked(GridManager tile) {
+		if(tileFrom == null) {
+			tileFrom = tile;
+			return;
+		}
+		// first tile already set
+		if(tileFrom == tile) Debug.Log("Invalid click: From and To tiles are the same!");
+		else {
+			tileTo = tile;
+			// Check to make sure the tiles are valid neighbors and then apply the swipe
+			if(GameManager.isNeighbor(tileFrom, tileTo)) {
+				Debug.Log("Tiles are valid neighbors");
+				GameManager.swipe(tileFrom, tileTo);
+			}
+			else Debug.Log("Invalid swipe, tiles are not neighbors");
+		}
+		tileFrom = null;
+		tileTo = null;
+	}
+	
 	//Instance
 	
 	public static int TILE_WIDTH = 3;
@@ -77,9 +105,11 @@ public class GameManager : MonoBehaviour {
 	// Our Prefab grid piece and a container
 	// to hold them all for later reference
 	public GameObject grid;
+	
 	//static List<GameObject> clones = new List<GameObject>();
 	GridManager[,] clones = new GridManager[TILE_WIDTH,TILE_HEIGHT];
 	
+
 	// Use this for initialization
 	void Start () {
 		// all are empty to start with
@@ -111,7 +141,6 @@ public class GameManager : MonoBehaviour {
 				// Instantiate an instance of our GridPrefab
 				GameObject clone = Instantiate(grid,new Vector3(x,y,z),rotation) as GameObject;
 				if(clone != null) {
-					Debug.Log("GridManager clone is not null");
 					clones[i,j] = clone.GetComponent<GridManager>();
 					clones[i,j].Initialize(i,j,new Vector3(x,y,z));
 				} else 	Debug.Log("GridManager clone is NULL!!!");
@@ -174,7 +203,7 @@ public class GameManager : MonoBehaviour {
 			}
 			int rnd = (new System.Random()).Next(1,600);
 			if(tile.getCount() > 0) {
-				continue; // this tile has is blue or red and is non-empty
+				continue; // this tile is blue or red and is non-empty
 			}
 			if(rnd % 2 == 0) {
 				Debug.Log("rnd even");
@@ -257,6 +286,7 @@ public class GameManager : MonoBehaviour {
 		}
 			
 		replaceBlanks();
+		GameManager.roundInProgress = true;
 	}
 
 }

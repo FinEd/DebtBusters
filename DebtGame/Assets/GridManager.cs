@@ -15,6 +15,7 @@ public class GridManager : MonoBehaviour {
 	public Texture redChip;
 	public Texture whiteChip;
 	public Texture selectedGrid;
+	public Texture unselectedGrid;
 
 	// What type of "chip" is this?
 	//  0 = unitialized
@@ -26,26 +27,24 @@ public class GridManager : MonoBehaviour {
 	Position ChipPosition;
 	Vector3 ChipLocation;
 
+	GameObject ChipObject = null;
 	
 	// Use this for initialization
 	void Start () {
-		Debug.Log("GridManager: in start()");
-		ChipType = TILE_NONE;
-		ChipCount = 0;
-
 	}
 	
 	public void Initialize(int i, int j, Vector3 location) {
-		this .ChipPosition = new Position(i, j);
+		this.ChipPosition = new Position(i, j);
 		this.ChipLocation = location;
 	}
 	
 	// Set chip type and chip count for this square
 	// Called by master class
 	public void ShowChip() {
+		if(ChipCount == 0) return;
+		
 		// Create the needed chip prefab
 		if(this.ChipType == TILE_BLUE) {
-			Debug.Log("I am a blue square with " + ChipCount + " chips");
 			
 			// Set rotation to 270 around the x-axis
 			// since we're using planes
@@ -53,11 +52,10 @@ public class GridManager : MonoBehaviour {
 			rotation.eulerAngles = new Vector3(90,0,0);
 					
 			// Instantiate an instance of our GridPrefab
-			GameObject bChip = Instantiate(chip,ChipLocation,rotation) as GameObject;
-			bChip.renderer.material.SetTexture("_MainTex",blueChip);
+			ChipObject = Instantiate(chip,ChipLocation,rotation) as GameObject;
+			ChipObject.renderer.material.SetTexture("_MainTex",blueChip);
 		}
 		else if(this.ChipType == TILE_RED) {
-			Debug.Log("I am a red square with " + ChipCount + " chips");
 			
 			// Set rotation to 270 around the x-axis
 			// since we're using planes
@@ -65,11 +63,10 @@ public class GridManager : MonoBehaviour {
 			rotation.eulerAngles = new Vector3(90,0,0);
 				
 			// Instantiate an instance of our GridPrefab
-			GameObject rChip = Instantiate(chip,ChipLocation,rotation) as GameObject;
-			rChip.renderer.material.SetTexture("_MainTex",redChip);
+			ChipObject = Instantiate(chip,ChipLocation,rotation) as GameObject;
+			ChipObject.renderer.material.SetTexture("_MainTex",redChip);
 		}
 		else if(this.ChipType == TILE_WHITE) {
-			Debug.Log("I am a white square with " + ChipCount + " chips");
 			
 			// Set rotation to 270 around the x-axis
 			// since we're using planes
@@ -77,29 +74,34 @@ public class GridManager : MonoBehaviour {
 			rotation.eulerAngles = new Vector3(90,0,0);
 					
 			// Instantiate an instance of our GridPrefab
-			GameObject wChip = Instantiate(chip,ChipLocation,rotation) as GameObject;
-			wChip.renderer.material.SetTexture("_MainTex",whiteChip);
+			ChipObject = Instantiate(chip,ChipLocation,rotation) as GameObject;
+			ChipObject.renderer.material.SetTexture("_MainTex",whiteChip);
 		}
 		else {
 			Debug.Log("I am an enigma! Chip type is " + ChipType);
 		}
 	}
-	
+
 	void OnMouseEnter() {
-		Debug.Log("Mouse Enter " + this.name + " position: " + ChipPosition.i + ", " + ChipPosition.j);
+		//Debug.Log("Mouse Enter " + this.name + " position: " + ChipPosition.i + ", " + ChipPosition.j);
+		renderer.material.SetTexture("_MainTex",selectedGrid);
 	}
 	
 	void OnMouseExit() {
-		Debug.Log("Mouse Exit " + this.name + " position: " + ChipPosition.i + ", " + ChipPosition.j);
+		//Debug.Log("Mouse Exit " + this.name + " position: " + ChipPosition.i + ", " + ChipPosition.j);
+		renderer.material.SetTexture("_MainTex",unselectedGrid);
 	}
-	
+/*
 	void OnMouseDown() {
 		Debug.Log("Mouse Down " + this.name + " position: " + ChipPosition.i + ", " + ChipPosition.j);
 		renderer.material.SetTexture("_MainTex",selectedGrid);	
 	}
+	*/
 	
 	void OnMouseUp() {
 		Debug.Log("Mouse Up " + this.name + " position: " + ChipPosition.i + ", " + ChipPosition.j);
+		if(GameManager.roundInProgress) GameManager.tileClicked(this);
+		else Debug.Log("Game round not in progress");
 	}
 	
 	// Update is called once per frame
@@ -107,13 +109,22 @@ public class GridManager : MonoBehaviour {
 	
 	}
 	
+	void chipReset() {
+		if(ChipObject != null) {
+			Debug.Log("Calling destroy method");
+			Destroy(ChipObject);
+			ChipObject = null;
+		}
+		ChipType = TILE_NONE;
+	}
+	
 	public void setCount(int count) {
 		this.ChipCount = count;
-		if(count == 0) ChipType = TILE_NONE;
+		if(count == 0) chipReset();
+		else if(ChipObject == null) ShowChip();
 	}
 	
 	public int getCount() {
-		if(ChipCount == 0) ChipType = TILE_NONE;
 		return ChipCount;
 	}
 	
@@ -126,7 +137,7 @@ public class GridManager : MonoBehaviour {
 		if(ChipType == TILE_WHITE) ChipCount = 0;
 		
 		if(ChipCount == 0) {
-			ChipType = TILE_NONE;
+			chipReset();
 			return true;
 		}
 		return false;
@@ -156,7 +167,7 @@ public class GridManager : MonoBehaviour {
 		else if(ChipType == TILE_RED) ChipCount *= 3;
 		else if(ChipType == TILE_WHITE) {
 			ChipCount = 0;
-			ChipType = TILE_NONE;
+			chipReset();
 		}
 	}
 
