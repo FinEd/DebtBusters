@@ -81,27 +81,39 @@ public class GridManager : MonoBehaviour {
 			Debug.Log("I am an enigma! Chip type is " + ChipType);
 		}
 	}
-
+	
+	public void toggleTexture() {
+		if(this.ChipType == TILE_WHITE) {
+			setType(GridManager.TILE_RED);
+			ChipObject.renderer.material.SetTexture("_MainTex",redChip);
+		} else if(this.ChipType == TILE_RED) {
+			setType(GridManager.TILE_WHITE);
+			ChipObject.renderer.material.SetTexture("_MainTex",whiteChip);			
+		}
+	}
 	void OnMouseEnter() {
 		//Debug.Log("Mouse Enter " + this.name + " position: " + ChipPosition.i + ", " + ChipPosition.j);
-		renderer.material.SetTexture("_MainTex",selectedGrid);
+		
 	}
 	
 	void OnMouseExit() {
 		//Debug.Log("Mouse Exit " + this.name + " position: " + ChipPosition.i + ", " + ChipPosition.j);
-		renderer.material.SetTexture("_MainTex",unselectedGrid);
 	}
-/*
+
 	void OnMouseDown() {
-		Debug.Log("Mouse Down " + this.name + " position: " + ChipPosition.i + ", " + ChipPosition.j);
+		//Debug.Log("Mouse Down " + this.name + " position: " + ChipPosition.i + ", " + ChipPosition.j);
 		renderer.material.SetTexture("_MainTex",selectedGrid);	
 	}
-	*/
+	
 	
 	void OnMouseUp() {
-		Debug.Log("Mouse Up " + this.name + " position: " + ChipPosition.i + ", " + ChipPosition.j);
+		//Debug.Log("Mouse Up " + this.name + " position: " + ChipPosition.i + ", " + ChipPosition.j);
 		if(GameManager.roundInProgress) GameManager.tileClicked(this);
 		else Debug.Log("Game round not in progress");
+	}
+	
+	public void cleanGrid() {
+		renderer.material.SetTexture("_MainTex",unselectedGrid);	
 	}
 	
 	// Update is called once per frame
@@ -109,9 +121,8 @@ public class GridManager : MonoBehaviour {
 	
 	}
 	
-	void chipReset() {
+	public void chipReset() {
 		if(ChipObject != null) {
-			Debug.Log("Calling destroy method");
 			Destroy(ChipObject);
 			ChipObject = null;
 		}
@@ -135,7 +146,7 @@ public class GridManager : MonoBehaviour {
 	public bool setEmptySpace() {
 		// remove white tiles
 		if(ChipType == TILE_WHITE) ChipCount = 0;
-		
+		Debug.Log("setEmptySpace:: Chip type = " + getTypeName() + ", count = " + ChipCount);
 		if(ChipCount == 0) {
 			chipReset();
 			return true;

@@ -43,12 +43,8 @@ public class Button : MonoBehaviour {
 	
 	public static GameManager getManager(GameObject gameObject) {
 		if(manager == null) {
-			Debug.Log("Creating game manager");
-			manager = (GameManager) gameObject.AddComponent("GameManager");
-		} else {
-			Debug.Log("Found game manager");
-			manager.startNewRound();
-		}
+			manager = (GameManager) Object.FindObjectOfType(typeof(GameManager));
+		} 
 		return manager;
 	}
 	
@@ -74,7 +70,6 @@ public class Button : MonoBehaviour {
         state++;
         if (state == 1)
             SetButtonTexture(ButtonState.hover);
-		Debug.Log("button enter");
     }
  
     public virtual void OnMouseDown()
@@ -82,8 +77,7 @@ public class Button : MonoBehaviour {
         state++;
         if (state == 2)
             SetButtonTexture(ButtonState.armed);
-		Debug.Log("button down");
-    }
+   }
  
     public virtual void OnMouseUp()
     {
@@ -94,7 +88,8 @@ public class Button : MonoBehaviour {
 //                messagee.SendMessage(message, this);
 			//GameMaster master = (GameMaster) gameObject.AddComponent("GameMaster");
 //			master.startNewRound();
-			getManager(gameObject);
+			getManager(gameObject).startNewRound();
+
         }
         else
         {
@@ -103,8 +98,7 @@ public class Button : MonoBehaviour {
                 state = 0;
         }
         SetButtonTexture(ButtonState.normal);
-		Debug.Log("button up");
-    }
+   }
  
     public virtual void OnMouseExit()
     {
@@ -112,6 +106,5 @@ public class Button : MonoBehaviour {
             state--;
         if (state == 0)
             SetButtonTexture(ButtonState.normal);
-		Debug.Log("button exit");
-    }
+   }
 }
