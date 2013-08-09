@@ -78,7 +78,18 @@ public class GridManager : MonoBehaviour {
 			ChipObject.renderer.material.SetTexture("_MainTex",whiteChip);
 		}
 		else {
-			Debug.Log("I am an enigma! Chip type is " + ChipType);
+			if(GameManager.movingBluesState) {
+				// in this state, this tile is a white after moving from center blue
+					// Set rotation to 270 around the x-axis
+				// since we're using planes
+				Quaternion rotation = Quaternion.identity;
+				rotation.eulerAngles = new Vector3(90,0,0);
+					
+				// Instantiate an instance of our GridPrefab
+				ChipObject = Instantiate(chip,ChipLocation,rotation) as GameObject;
+				ChipObject.renderer.material.SetTexture("_MainTex",whiteChip);
+				this.ChipType = TILE_WHITE;
+			} else Debug.Log("I am an enigma! Chip type is " + ChipType);
 		}
 	}
 	
@@ -126,6 +137,10 @@ public class GridManager : MonoBehaviour {
 			Destroy(ChipObject);
 			ChipObject = null;
 		}
+		if(ChipType == GridManager.TILE_BLUE) {
+			GameManager.resetMovingBluesState();
+			return;
+		}
 		ChipType = TILE_NONE;
 	}
 	
@@ -145,8 +160,10 @@ public class GridManager : MonoBehaviour {
 	
 	public bool setEmptySpace() {
 		// remove white tiles
-		if(ChipType == TILE_WHITE) ChipCount = 0;
-		Debug.Log("setEmptySpace:: Chip type = " + getTypeName() + ", count = " + ChipCount);
+		if(ChipType == TILE_WHITE) {
+			Debug.Log("setEmptySpace:: Chip type = " + getTypeName() + ", count = " + ChipCount);
+			ChipCount = 0;
+		}
 		if(ChipCount == 0) {
 			chipReset();
 			return true;
@@ -174,12 +191,12 @@ public class GridManager : MonoBehaviour {
 	
 	// compound logic
 	public void compound() {
-		if(ChipType == TILE_BLUE) ChipCount *= 2;
-		else if(ChipType == TILE_RED) ChipCount *= 3;
-		else if(ChipType == TILE_WHITE) {
-			ChipCount = 0;
-			chipReset();
+		if(ChipType == TILE_BLUE) {
+			float tmp = ChipCount;
+			tmp *= 1.5f;
+			ChipCount = (int)tmp;
 		}
+		else if(ChipType == TILE_RED) ChipCount *= 2;
 	}
 
 	public class Position {

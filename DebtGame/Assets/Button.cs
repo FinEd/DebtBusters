@@ -84,10 +84,6 @@ public class Button : MonoBehaviour {
         if (state == 2)
         {
             state--;
-//            if (messagee != null)
-//                messagee.SendMessage(message, this);
-			//GameMaster master = (GameMaster) gameObject.AddComponent("GameMaster");
-//			master.startNewRound();
 			getManager(gameObject).startNewRound();
 
         }

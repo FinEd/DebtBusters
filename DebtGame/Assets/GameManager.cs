@@ -4,8 +4,18 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {	
+	
+	private static readonly System.Random random = new System.Random();
+
 	static GridManager tileFrom = null;
 	static GridManager tileTo = null;
+	public static bool movingBluesState = false;
+	
+	public static void resetMovingBluesState() {
+		((GameManager) UnityEngine.Object.FindObjectOfType(typeof(GameManager))).replenishEmptySpacesCount();
+		movingBluesState = false;
+	}
+	
 	public static void tileClicked(GridManager tile) {
 		if(tileFrom == null) {
 			tileFrom = tile;
@@ -25,13 +35,28 @@ public class GameManager : MonoBehaviour {
 			}
 			else Debug.Log("Invalid swipe, tiles are not neighbors");
 		}
-		tileFrom.cleanGrid();
-		tileTo.cleanGrid();
+		if(tileFrom != null)tileFrom.cleanGrid();
+		if(tileTo != null)tileTo.cleanGrid();
 		tileFrom = null;
 		tileTo = null;
 	}
 	
 	public static void swipe(GridManager tileFrom, GridManager tileTo) {
+		
+		if(tileFrom.getType() == GridManager.TILE_BLUE) {
+			if(!GameManager.movingBluesState) {
+				Debug.Log("Invalid swipe from blue tile");
+				return;
+			} else {
+				// for simplicity allow only one white to be created from blue per swipe
+				// Perhaps encourages not to swipe from blue too many times
+				tileTo.setCount(tileTo.getCount() + 1);
+				tileFrom.setCount(tileFrom.getCount() - 1);
+				return;
+			}
+		}
+		
+		
 		if(tileFrom.getType() == GridManager.TILE_RED ||
 			tileFrom.getType() == GridManager.TILE_BLUE ||
 			tileFrom.getType() == GridManager.TILE_NONE ||
@@ -176,6 +201,18 @@ public class GameManager : MonoBehaviour {
 		Debug.Log("setEmptySpaces: calculated emptySpaces = " + emptySpaces);
 	}
 
+	public void replenishEmptySpacesCount() {
+		emptySpaces = 0;
+		for(int i=0; i < TILE_WIDTH; i++)
+			for(int j=0; j < TILE_HEIGHT; j++) {
+			if(i == 1 && j == 1) continue;
+			GridManager tile = clones[i, j];
+			if(tile.getType() == GridManager.TILE_NONE) emptySpaces ++;
+		}
+		Debug.Log("replenishEmptySpacesCount: re-calculated emptySpaces = " + emptySpaces);
+
+	}
+	
 	// Called at the beginning of each round
 	// Double the blues and triple the reds
 	void compoundTiles() {
@@ -186,18 +223,19 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 	
-
 	void moveBlues() {
+		GameManager.movingBluesState = true;
 	}
 	
 	public void endGameCondition() {
+		if(GameManager.movingBluesState) return;
 		// check for win
 		if(checkForWin()) Debug.Log("CONGRATULATIONS!! You won the game!");
 		if(checkNoMoreMoves()) {
 			Debug.Log("You have no more moves this round! Allocate blue chips and continue.");
 			setEmptySpaces();
 
-			moveBlues();
+			moveBlues(); // To be implemented
 		}
 	}
 	
@@ -237,6 +275,7 @@ public class GameManager : MonoBehaviour {
 		int whitesToAdd = emptySpaces;
 		int redsToAdd = emptySpaces;
 		List<string> existingReds = new List<string>();
+		List<string> existingWhites = new List<string>();
 		Debug.Log("Replacing " + emptySpaces + " empty spaces");
 		
 		bool placedAtleastOneWhite = false;
@@ -249,15 +288,23 @@ public class GameManager : MonoBehaviour {
 				tile.setType(GridManager.TILE_BLUE);
 				continue;
 			}
-			int rnd = (new System.Random()).Next(1,600);
+			//int rnd = (new System.Random()).Next(1,600);
+			float rnd = GameManager.random.Next(1,600);
+			//Debug.Log("Random value = " + rnd);
 			if(tile.getCount() > 0) {
 				if(tile.getType() == GridManager.TILE_RED) {
 					existingReds.Add (Convert.ToString(i*TILE_WIDTH+j));
 					//Debug.Log("Non-zero red at " + i + "," + j);
 				}
+				else if(tile.getType() == GridManager.TILE_WHITE) {
+					existingWhites.Add (Convert.ToString(i*TILE_WIDTH+j));
+					//Debug.Log("Non-zero red at " + i + "," + j);
+				}
 				continue; // this tile is blue or red and is non-empty
 			}
+			Debug.Log("Tile("+i+","+j+") type:"+tile.getTypeName()+" count="+tile.getCount());
 			if(rnd % 2 == 0) {
+			//if(rnd < 0.5) {
 				tile.setType(GridManager.TILE_WHITE);
 				tile.setCount(1);
 				whitesToAdd--;
@@ -304,6 +351,11 @@ public class GameManager : MonoBehaviour {
 			for(int j=0; j < TILE_HEIGHT; j++) {
 				if(whitesToAdd == 0) break;
 				if(i==1 & j==1) continue;
+				string pos = Convert.ToString(i*TILE_WIDTH+j);
+				if(existingWhites.Contains(pos)) {
+					Debug.Log("Skipping white at location " + i + ", " + j);
+					continue;
+				}
 				GridManager tile = clones[i, j];
 				if(tile.getType() == GridManager.TILE_WHITE) {
 					if(easyMode) {
@@ -327,7 +379,7 @@ public class GameManager : MonoBehaviour {
 				if(i==1 & j==1) continue;
 				string pos = Convert.ToString(i*TILE_WIDTH+j);
 				if(existingReds.Contains(pos)) {
-					//Debug.Log("Skipping red at location " + i + ", " + j);
+					Debug.Log("Skipping red at location " + i + ", " + j);
 					continue;
 				}
 				GridManager tile = clones[i, j];
@@ -358,6 +410,8 @@ public class GameManager : MonoBehaviour {
 	// called each time the boggle button is pressed
 	public void startNewRound() {
 		GameManager.roundMoves = MOVES_PER_ROUND;
+		// reset movingBlues if needed
+		GameManager.resetMovingBluesState();
 		compoundTiles();
 		replaceBlanks();
 		GameManager.roundInProgress = true;
