@@ -416,5 +416,9 @@ public class GameManager : MonoBehaviour {
 		replaceBlanks();
 		GameManager.roundInProgress = true;
 	}
-
+	
+	void OnGUI() {
+		//GUI.Label(new Rect(0, 0, 100, 100), "Hi!");
+    	GUI.Label(new Rect(300, 200, 100, 100), "Moves Remaining: " + GameManager.roundMoves);
+    }
 }

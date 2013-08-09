@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 
 public class GridManager : MonoBehaviour {
+
 	
+	public TextMesh ChipCountText;
 		// Tile type
 	public const int TILE_NONE = 0;
 	public const int TILE_WHITE = 1;
@@ -129,7 +132,7 @@ public class GridManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+		ChipCountText.text = Convert.ToString(ChipCount);
 	}
 	
 	public void chipReset() {

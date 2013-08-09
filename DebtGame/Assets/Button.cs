@@ -73,7 +73,7 @@ public class Button : MonoBehaviour {
     }
  
     public virtual void OnMouseDown()
-    {
+	{
         state++;
         if (state == 2)
             SetButtonTexture(ButtonState.armed);

@@ -11,7 +11,7 @@ GameObject:
   - 33: {fileID: 3300000}
   - 136: {fileID: 13600000}
   - 23: {fileID: 2300000}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: ChipPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
