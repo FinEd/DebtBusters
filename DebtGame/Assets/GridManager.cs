@@ -132,7 +132,10 @@ public class GridManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		ChipCountText.text = Convert.ToString(ChipCount);
+		if(ChipType == GridManager.TILE_RED)
+			ChipCountText.text = Convert.ToString("-"+ChipCount);
+		else
+			ChipCountText.text = Convert.ToString(ChipCount);
 	}
 	
 	public void chipReset() {

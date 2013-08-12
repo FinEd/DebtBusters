@@ -48,10 +48,15 @@ public class GameManager : MonoBehaviour {
 				Debug.Log("Invalid swipe from blue tile");
 				return;
 			} else {
-				// for simplicity allow only one white to be created from blue per swipe
-				// Perhaps encourages not to swipe from blue too many times
-				tileTo.setCount(tileTo.getCount() + 1);
-				tileFrom.setCount(tileFrom.getCount() - 1);
+				if(tileFrom.getCount() == 0) return;
+				else if(tileTo.getType() == GridManager.TILE_RED) {
+					Debug.Log("Invalid allocation to red tile");
+				} else {
+					// for simplicity allow only one white to be created from blue per swipe
+					// Perhaps encourages not to swipe from blue too many times
+					tileTo.setCount(tileTo.getCount() + 1);
+					tileFrom.setCount(tileFrom.getCount() - 1);
+				}
 				return;
 			}
 		}
@@ -114,6 +119,9 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public static bool roundInProgress = false;
+	
+	public static bool endGameState = false;
+	public static string endGameMessage = null;
 	//Instance
 	public static int MOVES_PER_ROUND = 6;
 	
@@ -124,7 +132,6 @@ public class GameManager : MonoBehaviour {
 	
 	public static int roundMoves = MOVES_PER_ROUND;
 	public static int roundCount = 0;
-	bool startOfGame = false;
 	// At start of game this = n-1 empty spaces and then gets updated from the tile status at beginning of 
 	// a new round
 	int emptySpaces = 0;
@@ -174,7 +181,6 @@ public class GameManager : MonoBehaviour {
 
 			}
 		}
-		startOfGame = true;
 		Debug.Log("GameMaster: Let the game begin!!");
 		startNewRound();
 
@@ -230,7 +236,11 @@ public class GameManager : MonoBehaviour {
 	public void endGameCondition() {
 		if(GameManager.movingBluesState) return;
 		// check for win
-		if(checkForWin()) Debug.Log("CONGRATULATIONS!! You won the game!");
+		if(checkForWin()) {
+			endGameMessage = "CONGRATULATIONS!! You won the game!";
+			Debug.Log(endGameMessage);
+			endGameState = true;
+		}
 		if(checkNoMoreMoves()) {
 			Debug.Log("You have no more moves this round! Allocate blue chips and continue.");
 			setEmptySpaces();
@@ -318,7 +328,9 @@ public class GameManager : MonoBehaviour {
 		}
 		
 		if(!placedAtleastOneWhite || !placedAtleastOneRed) {
-			Debug.Log("Sorry! You have lost the game!");
+			endGameMessage = "Sorry! You have lost the game!";
+			Debug.Log(endGameMessage);
+			endGameState = true;
 			//Application.Quit();
 			return;
 		}
@@ -419,6 +431,10 @@ public class GameManager : MonoBehaviour {
 	
 	void OnGUI() {
 		//GUI.Label(new Rect(0, 0, 100, 100), "Hi!");
-    	GUI.Label(new Rect(300, 200, 100, 100), "Moves Remaining: " + GameManager.roundMoves);
-    }
+		if(endGameState) GUI.Label(new Rect(100, 200, 300, 100), endGameMessage);
+		else if(GameManager.movingBluesState)
+			GUI.Label(new Rect(100, 200, 300, 100), "Allocate blue chips and press red button to continue.");
+		else
+    		GUI.Label(new Rect(300, 200, 300, 100), "Moves Remaining: " + GameManager.roundMoves);
+    }	
 }
